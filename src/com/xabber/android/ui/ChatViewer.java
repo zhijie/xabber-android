@@ -14,32 +14,48 @@
  */
 package com.xabber.android.ui;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.Collection;
 
+import org.xbill.DNS.utils.base64;
+
+import android.R.bool;
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.text.ClipboardManager;
+import android.util.Base64;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.SubMenu;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
+import com.uraroji.garage.android.mp3recvoice.RecMicToMp3;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.LogManager;
@@ -89,6 +105,9 @@ public class ChatViewer extends ManagedActivity implements
 		OnChatChangedListener, OnContactChangedListener,
 		OnAccountChangedListener, OnEditorActionListener,
 		ConfirmDialogListener, OnTextChangedListener {
+	
+	public static String MP3_TMP_PATH_STRING = Environment.getExternalStorageDirectory() + "/xabber.mp3";
+	private RecMicToMp3 mRecMicToMp3 = new RecMicToMp3(MP3_TMP_PATH_STRING, 8000);
 
 	/**
 	 * Attention request.
@@ -142,7 +161,9 @@ public class ChatViewer extends ManagedActivity implements
 	private String actionWithUser;
 	private View actionWithView;
 	private MessageItem actionWithMessage;
-
+	private Button voiceButton;
+	private Button voiceTextSwitchButton;
+	private EditText textInput;
 	private boolean exitOnSend;
 
 	private boolean isVisible;
@@ -193,6 +214,80 @@ public class ChatViewer extends ManagedActivity implements
 			actionWithUser = user;
 
 		selectChat(actionWithAccount, actionWithUser);
+		
+		mRecMicToMp3.setHandle(new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+				switch (msg.what) {
+				case RecMicToMp3.MSG_REC_STARTED:
+					break;
+				case RecMicToMp3.MSG_REC_STOPPED:
+					break;
+				case RecMicToMp3.MSG_ERROR_GET_MIN_BUFFERSIZE:
+					Toast.makeText(ChatViewer.this,
+							"RecMicToMp3.MSG_ERROR_GET_MIN_BUFFERSIZE",
+							Toast.LENGTH_LONG).show();
+					break;
+				case RecMicToMp3.MSG_ERROR_CREATE_FILE:
+					Toast.makeText(ChatViewer.this, "RecMicToMp3.MSG_ERROR_CREATE_FILE",
+							Toast.LENGTH_LONG).show();
+					break;
+				case RecMicToMp3.MSG_ERROR_REC_START:
+					Toast.makeText(ChatViewer.this, "RecMicToMp3.MSG_ERROR_REC_START",
+							Toast.LENGTH_LONG).show();
+					break;
+				case RecMicToMp3.MSG_ERROR_AUDIO_RECORD:
+					Toast.makeText(ChatViewer.this, "RecMicToMp3.MSG_ERROR_AUDIO_RECORD",
+							Toast.LENGTH_LONG).show();
+					break;
+				case RecMicToMp3.MSG_ERROR_AUDIO_ENCODE:
+					Toast.makeText(ChatViewer.this, "RecMicToMp3.MSG_ERROR_AUDIO_ENCODE",
+							Toast.LENGTH_LONG).show();
+					break;
+				case RecMicToMp3.MSG_ERROR_WRITE_FILE:
+					Toast.makeText(ChatViewer.this, "RecMicToMp3.MSG_ERROR_WRITE_FILE",
+							Toast.LENGTH_LONG).show();
+					break;
+				case RecMicToMp3.MSG_ERROR_CLOSE_FILE:
+					Toast.makeText(ChatViewer.this, "RecMicToMp3.MSG_ERROR_CLOSE_FILE",
+							Toast.LENGTH_LONG).show();
+					break;
+				default:
+					break;
+				}
+			}
+		});
+		
+		textInput=(EditText)findViewById(R.id.chat_input);
+		
+		voiceTextSwitchButton = (Button)findViewById(R.id.chat_switch);
+		voiceTextSwitchButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				boolean textmode = textInput.getVisibility() == View.VISIBLE;
+				if (textmode) {
+					textInput.setVisibility(View.GONE);
+					voiceButton.setVisibility(View.VISIBLE);
+				}else {
+					textInput.setVisibility(View.VISIBLE);
+					voiceButton.setVisibility(View.GONE);
+				}
+			}
+		});
+		voiceButton = (Button)findViewById(R.id.chat_voice);
+		voiceButton.setOnTouchListener(new OnTouchListener() {
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					startRecordVoice();
+				}else if(event.getAction() == MotionEvent.ACTION_UP){
+					stopRecordVoice();
+				}
+				return false;
+			}
+		});
 	}
 
 	@Override
@@ -638,7 +733,6 @@ public class ChatViewer extends ManagedActivity implements
 		if (PageSwitcher.LOG)
 			LogManager.i(this, "onUnselect");
 	}
-
 	private void sendMessage() {
 		if (actionWithView == null)
 			return;
@@ -878,4 +972,41 @@ public class ChatViewer extends ManagedActivity implements
 		return ACTION_ATTENTION.equals(intent.getAction());
 	}
 
+	private void startRecordVoice()
+	{
+		
+		mRecMicToMp3.start();
+	}
+	private void stopRecordVoice()
+	{
+		mRecMicToMp3.stop();
+		sendVoiceMessage();
+	}
+
+	@TargetApi(8)
+	private void sendVoiceMessage() {
+		try {
+			
+			BufferedInputStream in = new BufferedInputStream(new FileInputStream(MP3_TMP_PATH_STRING));
+			ByteArrayOutputStream out = new ByteArrayOutputStream(102400);
+			byte[] temp = new byte[1024];
+			int size  = 0; 
+			while ((size = in.read(temp)) != -1){
+				out.write(temp,0,size);
+			}
+			in.close();
+			byte[] mp3content = out.toByteArray();
+			// convert to base64
+			String mp3Mesage = Base64.encodeToString(mp3content,Base64.DEFAULT);
+			
+			String text = "#1"+mp3Mesage;
+			chatViewerAdapter.setOnTextChangedListener(null);
+			chatViewerAdapter.setOnTextChangedListener(this);
+			sendMessage(text);
+			if (exitOnSend)
+				close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
