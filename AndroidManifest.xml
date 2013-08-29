@@ -24,16 +24,41 @@
         android:icon="@drawable/ic_launcher"
         android:name="com.xabber.android.data.Application"
         >
+        
+        <activity
+            android:name="com.xabber.android.weixin.Appstart"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Anim_style2" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.xabber.android.weixin.WhatsnewDoor" android:theme="@style/Anim_style2" />
+        <activity android:name="com.xabber.android.weixin.MainWeixin" android:theme="@style/Anim_style2" />
+        <activity android:name="com.xabber.android.weixin.Login"  android:theme="@android:style/Theme.NoTitleBar" />        
+        <activity android:name="com.xabber.android.weixin.Welcome"  android:theme="@style/Anim_style2"  />
+        <activity android:name="com.xabber.android.weixin.Whatsnew"  android:theme="@style/Anim_style2" />
+        <activity android:name="com.xabber.android.weixin.ChatActivity"  android:theme="@android:style/Theme.NoTitleBar" />
+        <activity android:name="com.xabber.android.weixin.ShakeActivity"  android:theme="@android:style/Theme.NoTitleBar" />
+        <activity android:name="com.xabber.android.weixin.InfoXiaohei"  android:theme="@android:style/Theme.NoTitleBar" />
+        <activity android:name="com.xabber.android.weixin.Exit" android:theme="@style/MyDialogStyle" />        
+        <activity android:name="com.xabber.android.weixin.ExitFromSettings" android:theme="@style/MyDialogStyleBottom" /> 
+        <activity android:name="com.xabber.android.weixin.InfoXiaoheiHead" android:theme="@style/HeadScale" />
+        <activity android:name="com.xabber.android.weixin.LoadingActivity" android:theme="@style/MyDialogStyle" />             
+        <activity android:name="com.xabber.android.weixin.MainTopRightDialog" android:theme="@style/MyDialogStyleTop" /> 
+        
+        
         <activity
             android:label="@string/application_name"
             android:name="com.xabber.android.ui.ContactList"
             android:theme="@style/Theme.NoTitleBar"
             android:launchMode="singleTop"
             >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+<!--             <intent-filter> -->
+<!--                 <action android:name="android.intent.action.MAIN" /> -->
+<!--                 <category android:name="android.intent.category.LAUNCHER" /> -->
+<!--             </intent-filter> -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
