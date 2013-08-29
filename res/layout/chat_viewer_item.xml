@@ -51,12 +51,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:paddingTop="4dip">
-        <Button
-            android:text="Switch"
-            android:id="@+id/chat_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            />
         <EditText
             android:id="@+id/chat_input"
             android:layout_weight="1"
@@ -70,15 +64,6 @@
             android:scrollbars="vertical"
             android:fadingEdge="vertical"
             />
-        <Button
-            android:text="Hold to talk"
-            android:id="@+id/chat_voice"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:visibility="gone"
-            />
-        
         <Button
             android:text="@string/chat_send"
             android:id="@+id/chat_send"
