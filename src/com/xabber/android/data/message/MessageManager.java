@@ -14,10 +14,13 @@
  */
 package com.xabber.android.data.message;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,8 +33,10 @@ import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smackx.packet.MUCUser;
 
+import android.annotation.TargetApi;
 import android.database.Cursor;
 import android.os.Environment;
+import android.util.Base64;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
@@ -429,6 +434,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
 		AccountManager.getInstance().onAccountChanged(accountItem.getAccount());
 	}
 
+	@TargetApi(8)
 	@Override
 	public void onPacket(ConnectionItem connection, String bareAddress,
 			Packet packet) {
@@ -458,6 +464,24 @@ public class MessageManager implements OnLoadListener, OnPacketListener,
 			final String body = message.getBody();
 			if (body == null)
 				return;
+			
+			// process voice
+			if (body.startsWith("#1")) {
+				try {
+					String mp3base64 = body.substring(2);
+					byte[] mp3data = Base64.decode(mp3base64, Base64.DEFAULT);
+					String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+					String fileName = Environment.getExternalStorageDirectory() +currentDateTimeString+ ".mp3";
+					BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(fileName));
+					bos.write(mp3data);
+					bos.flush();
+					bos.close();
+					
+					message.setBody( "#1"+fileName);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 			for (PacketExtension packetExtension : message.getExtensions())
 				if (packetExtension instanceof MUCUser)
 					return;
