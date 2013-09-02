@@ -14,19 +14,28 @@
  */
 package com.xabber.android.ui.adapter;
 
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Environment;
+import android.telephony.gsm.SmsMessage.MessageClass;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
 import android.text.style.CharacterStyle;
 import android.text.style.ImageSpan;
 import android.text.style.TextAppearanceSpan;
+import android.util.Base64;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -40,6 +49,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.muc.MUCManager;
 import com.xabber.android.data.extension.muc.RoomContact;
+import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.ChatAction;
 import com.xabber.android.data.message.MessageItem;
 import com.xabber.android.data.message.MessageManager;
@@ -168,13 +178,64 @@ public class ChatMessageAdapter extends BaseAdapter implements UpdatableAdapter 
 			textView.setTextAppearance(activity, R.style.ChatInfo_Warning);
 			return view;
 		}
-
+		
+		
 		final MessageItem messageItem = (MessageItem) getItem(position);
+		final String body = messageItem.getText();
+		if(body.startsWith("#1") && !body.endsWith(".mp3")){
+			try {
+				String mp3base64 = body.substring(2);
+				byte[] mp3data = Base64.decode(mp3base64, Base64.DEFAULT);
+				String currentDateTimeString = System.currentTimeMillis()+"";//DateFormat.getDateTimeInstance().format(new Date());
+				String fileName = Environment.getExternalStorageDirectory() +"/xabber/"+currentDateTimeString+ ".mp3";
+				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(fileName));
+				bos.write(mp3data);
+				bos.flush();
+				bos.close();
+				
+				messages.remove(position);
+				MessageItem newiItem = new MessageItem(messageItem.getChat(), 
+						messageItem.getTag(), 
+						messageItem.getResource(), 
+						"#1"+fileName, 
+						messageItem.getAction(), 
+						messageItem.getTimestamp(), 
+						messageItem.getDelayTimestamp(), 
+						messageItem.isIncoming(), 
+						messageItem.isRead(), 
+						messageItem.isSent(), 
+						messageItem.isError(), 
+						messageItem.isDelivered(), 
+						messageItem.isUnencypted(), 
+						messageItem.isOffline());
+				messages.add(position, newiItem );
+				
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+//
+//		// play voice mp3
+//		view.setOnClickListener(new OnClickListener() {
+//			
+//
+//			public void onClick(View v) {
+//				if (body.startsWith("#1") && body.endsWith(".mp3")) {
+//					Uri uri = Uri.parse("file://"+body.substring(2));
+//					Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+//					activity.startActivity(intent);
+//				}
+//				
+//			}
+//		});
+		
 		final String name;
 		final String account = messageItem.getChat().getAccount();
 		final String user = messageItem.getChat().getUser();
 		final String resource = messageItem.getResource();
 		final boolean incoming = messageItem.isIncoming();
+
 		if (isMUC) {
 			name = resource;
 		} else {

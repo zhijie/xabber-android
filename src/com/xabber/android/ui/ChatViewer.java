@@ -23,7 +23,6 @@ import java.util.Collection;
 import org.xbill.DNS.utils.base64;
 
 import android.R.bool;
-import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -151,6 +150,7 @@ public class ChatViewer extends ManagedActivity implements
 	private static final int CONTEXT_MENU_REPEAT_ID = 0x101;
 	private static final int CONTEXT_MENU_COPY_ID = 0x102;
 	private static final int CONTEXT_MENU_REMOVE_ID = 0x103;
+	private static final int CONTEXT_MENU_PLAY_ID = 0x104;
 
 	private static final int DIALOG_EXPORT_CHAT_ID = 0x200;
 
@@ -215,6 +215,7 @@ public class ChatViewer extends ManagedActivity implements
 
 		selectChat(actionWithAccount, actionWithUser);
 		
+
 		mRecMicToMp3.setHandle(new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
@@ -587,6 +588,8 @@ public class ChatViewer extends ManagedActivity implements
 				getResources().getText(R.string.message_copy));
 		menu.add(0, CONTEXT_MENU_REMOVE_ID, 0,
 				getResources().getText(R.string.message_remove));
+		menu.add(0, CONTEXT_MENU_PLAY_ID, 0,
+				"PLAY");
 	}
 
 	/**
@@ -630,6 +633,15 @@ public class ChatViewer extends ManagedActivity implements
 		case CONTEXT_MENU_REMOVE_ID:
 			MessageManager.getInstance().removeMessage(actionWithMessage);
 			chatViewerAdapter.onChatChange(actionWithView, false);
+			return true;
+		case CONTEXT_MENU_PLAY_ID:
+			String body = actionWithMessage.getText();
+			if (body.startsWith("#1") && body.endsWith(".mp3")) {
+				Uri uri = Uri.parse("file://"+body.substring(2));
+				Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+				intent.setDataAndType(uri,"audio/mp3");
+				startActivity(intent);
+			}
 			return true;
 		}
 		return false;
@@ -983,7 +995,6 @@ public class ChatViewer extends ManagedActivity implements
 		sendVoiceMessage();
 	}
 
-	@TargetApi(8)
 	private void sendVoiceMessage() {
 		try {
 			
