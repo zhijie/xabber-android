@@ -1,5 +1,5 @@
 
-package com.xabber.android.weixin;
+package com.xabber.android.ui.weixin;
 
 public class ChatMsgEntity {
     private static final String TAG = ChatMsgEntity.class.getSimpleName();

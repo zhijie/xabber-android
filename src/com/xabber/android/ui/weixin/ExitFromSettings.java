@@ -1,4 +1,4 @@
-package com.xabber.android.weixin;
+package com.xabber.android.ui.weixin;
 
 
 import android.app.Activity;
@@ -11,15 +11,15 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.xabber.androiddev.R;
-public class MainTopRightDialog extends Activity {
+public class ExitFromSettings extends Activity {
 	//private MyDialog dialog;
 	private LinearLayout layout;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main_top_right_dialog);
+		setContentView(R.layout.exit_dialog_from_settings);
 		//dialog=new MyDialog(this);
-		layout=(LinearLayout)findViewById(R.id.main_dialog_layout);
+		layout=(LinearLayout)findViewById(R.id.exit_layout2);
 		layout.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -36,7 +36,7 @@ public class MainTopRightDialog extends Activity {
 		finish();
 		return true;
 	}
-	/*
+	
 	public void exitbutton1(View v) {  
     	this.finish();    	
       }  
@@ -44,5 +44,5 @@ public class MainTopRightDialog extends Activity {
     	this.finish();
     	MainWeixin.instance.finish();//¹Ø±ÕMain Õâ¸öActivity
       }  
-	*/
+	
 }

@@ -1,8 +1,8 @@
-package com.xabber.android.weixin;
+package com.xabber.android.ui.weixin;
 
 
 
-import com.xabber.android.weixin.ShakeListener.OnShakeListener;
+import com.xabber.android.ui.weixin.ShakeListener.OnShakeListener;
 
 import android.os.Bundle;
 import android.os.Handler;

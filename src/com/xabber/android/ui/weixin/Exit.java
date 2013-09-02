@@ -1,4 +1,4 @@
-package com.xabber.android.weixin;
+package com.xabber.android.ui.weixin;
 
 
 import android.app.Activity;
@@ -11,15 +11,15 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.xabber.androiddev.R;
-public class ExitFromSettings extends Activity {
+public class Exit extends Activity {
 	//private MyDialog dialog;
 	private LinearLayout layout;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.exit_dialog_from_settings);
+		setContentView(R.layout.exit_dialog);
 		//dialog=new MyDialog(this);
-		layout=(LinearLayout)findViewById(R.id.exit_layout2);
+		layout=(LinearLayout)findViewById(R.id.exit_layout);
 		layout.setOnClickListener(new OnClickListener() {
 			
 			@Override

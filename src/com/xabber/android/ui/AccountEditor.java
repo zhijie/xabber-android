@@ -196,7 +196,6 @@ public class AccountEditor extends BaseSettingsActivity implements
 				Integer.valueOf(accountItem.getArchiveMode().ordinal()));
 		return source;
 	}
-
 	@Override
 	protected Map<String, Object> getPreferences(Map<String, Object> source) {
 		Map<String, Object> result = super.getPreferences(source);

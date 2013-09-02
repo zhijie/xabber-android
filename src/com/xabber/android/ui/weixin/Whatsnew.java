@@ -1,4 +1,4 @@
-package com.xabber.android.weixin;
+package com.xabber.android.ui.weixin;
 
 import java.util.ArrayList;
 import android.os.Bundle;

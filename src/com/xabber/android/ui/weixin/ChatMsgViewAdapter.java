@@ -1,5 +1,5 @@
 
-package com.xabber.android.weixin;
+package com.xabber.android.ui.weixin;
 
 import android.R.integer;
 import android.content.Context;
