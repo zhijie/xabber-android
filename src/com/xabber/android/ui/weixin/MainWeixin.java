@@ -18,11 +18,18 @@ import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
+import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.message.MessageManager;
+import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.roster.RosterManager;
 import com.xabber.androiddev.R;
 public class MainWeixin extends Activity {
 	
@@ -44,6 +51,8 @@ public class MainWeixin extends Activity {
 	private LayoutInflater inflater;
 	//private Button mRightBtn;
 	
+	View mRoasterView;
+	View mRecentMessageView;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +97,9 @@ public class MainWeixin extends Activity {
         View view3 = mLi.inflate(R.layout.main_tab_friends, null);
         View view4 = mLi.inflate(R.layout.main_tab_settings, null);
         
+        mRoasterView = view2;
+        mRecentMessageView = view1;
+        
       //每个页面的view数据
         final ArrayList<View> views = new ArrayList<View>();
         views.add(view1);
@@ -125,6 +137,33 @@ public class MainWeixin extends Activity {
 		};
 		
 		mTabPager.setAdapter(mPagerAdapter);
+		
+		setupContactList();
+		setupRecentMessage();
+    }
+    
+    public void setupContactList() {
+    	MessageManager messageManager = MessageManager.getInstance();
+    	RosterManager rosterManager = RosterManager.getInstance();
+    	ChatManager chatManager = ChatManager.getInstance();
+    	AccountManager accountManager = AccountManager.getInstance();
+    	
+    	ListView roasterListView = (ListView)mRoasterView.findViewById(R.id.roster);
+    	RosterListAdapter rosterListAdapter = new RosterListAdapter(this);
+    	rosterListAdapter.setContacts(rosterManager.getContacts());
+    	roasterListView.setAdapter(rosterListAdapter);
+    	roasterListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				
+				
+			}
+    		
+		});
+    }
+    public void setupRecentMessage() {
     }
     /**
 	 * 头标点击监听

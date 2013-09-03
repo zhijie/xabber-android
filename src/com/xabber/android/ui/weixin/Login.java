@@ -137,8 +137,10 @@ View.OnClickListener, OnItemSelectedListener  {
 					Application.getInstance().onError(e);
 					return;
 				}
-				setResult(RESULT_OK, createAuthenticatorResult(this, account));
-//				finish();
+
+		      	Intent intent = new Intent();
+				intent.setClass(this,MainWeixin.class);
+				startActivity(intent);
 			}
 			break;
 		default:
